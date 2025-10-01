@@ -1,0 +1,6071 @@
+{
+  "report_meta": {
+    "report_id": "44e07406-237d-4b81-8116-697363632df9",
+    "generated_at": "2025-10-01T11:14:31Z",
+    "framework": "GDPR",
+    "period": {
+      "from": "2025-09-01T00:00:00Z",
+      "to": "2025-09-30T23:59:59Z"
+    },
+    "sources": [
+      {
+        "type": "cloudtrail",
+        "count": 25000
+      }
+    ]
+  },
+  "short_summary": {
+    "period": {
+      "from": "2025-09-01T00:00:00Z",
+      "to": "2025-09-30T23:59:59Z"
+    },
+    "key_numbers": {
+      "events": 25000,
+      "unique_principals": 56,
+      "error_rate": 0.08,
+      "top_services": [
+        {
+          "service": "rds",
+          "count": 3292
+        },
+        {
+          "service": "cloudtrail",
+          "count": 3123
+        },
+        {
+          "service": "kms",
+          "count": 3117
+        }
+      ]
+    },
+    "risk_score": 100,
+    "top_risks": [
+      {
+        "type": "root_usage",
+        "count": 4971,
+        "severity": "high"
+      },
+      {
+        "type": "privilege_change",
+        "count": 3098,
+        "severity": "high"
+      },
+      {
+        "type": "role_no_mfa",
+        "count": 2434,
+        "severity": "high"
+      }
+    ],
+    "owners": {
+      "Security & Access Control": [
+        {
+          "issue": "root_usage",
+          "severity": "high",
+          "action": "Disable root API keys; enable root account MFA; create break-glass procedure only."
+        },
+        {
+          "issue": "privilege_change",
+          "severity": "high",
+          "action": "Review Admin policy attachments; require approvals; monitor access key creations."
+        },
+        {
+          "issue": "role_no_mfa",
+          "severity": "high",
+          "action": "Require MFA for AssumeRole; enforce conditional IAM; add session policy checks."
+        },
+        {
+          "issue": "logging_disabled_attempt",
+          "severity": "critical",
+          "action": "Block StopLogging with SCP; alert on attempts; verify CloudTrail is multi-region & immutable."
+        },
+        {
+          "issue": "kms_decrypt_activity",
+          "severity": "medium",
+          "action": "Scope KMS key IAM; add CMK key policies; monitor decrypt rates & IP reputation."
+        }
+      ],
+      "Backend & Workflow Automation": [
+        {
+          "issue": "error_event",
+          "severity": "low",
+          "action": "Alert on bursts; correlate with write ops; fix failing automation jobs."
+        }
+      ],
+      "AI / NLP Processing": [
+        {
+          "issue": "s3_data_change",
+          "severity": "medium",
+          "action": "Enforce default encryption & bucket policies; require approvals for delete/write in sensitive buckets."
+        },
+        {
+          "issue": "s3_data_access",
+          "severity": "low",
+          "action": "Tag buckets with data classifications; add anomaly detection on GetObject spikes."
+        }
+      ]
+    }
+  },
+  "vulnerabilities": {
+    "risk_score": 100,
+    "findings": [
+      {
+        "type": "root_usage",
+        "count": 4971,
+        "severity": "high",
+        "owner": "Security & Access Control",
+        "recommendation": "Disable root API keys; enable root account MFA; create break-glass procedure only.",
+        "examples": [
+          {
+            "t": "2025-09-29T06:21:08Z",
+            "actor": "arn:aws:iam::111122223333:root",
+            "svc": "sts",
+            "action": "GetCallerIdentity",
+            "region": "us-east-1",
+            "ip": "34.201.12.226",
+            "id": "80593c96-458e-435b-a7e0-00fe53b91cda"
+          },
+          {
+            "t": "2025-09-19T00:13:45Z",
+            "actor": "arn:aws:iam::012345678901:root",
+            "svc": "s3",
+            "action": "CreateBucket",
+            "region": "ap-southeast-1",
+            "ip": "52.95.110.201",
+            "id": "f5ef5dea-bc57-4ddd-a700-0795c1f38a8a"
+          },
+          {
+            "t": "2025-09-27T13:57:20Z",
+            "actor": "arn:aws:iam::111122223333:root",
+            "svc": "ec2",
+            "action": "DescribeInstances",
+            "region": "ap-southeast-1",
+            "ip": "52.95.110.130",
+            "id": "d729d68b-0ef0-4059-a000-9cac24c4aa7f"
+          }
+        ]
+      },
+      {
+        "type": "privilege_change",
+        "count": 3098,
+        "severity": "high",
+        "owner": "Security & Access Control",
+        "recommendation": "Review Admin policy attachments; require approvals; monitor access key creations.",
+        "examples": [
+          {
+            "t": "2025-09-18T18:22:07Z",
+            "actor": "arn:aws:sts::555566667777:assumed-role/Admin/bob",
+            "svc": "iam",
+            "action": "CreateAccessKey",
+            "region": "eu-central-1",
+            "ip": "34.201.12.152",
+            "id": "1ed398e2-b627-41d5-a3b7-65133db04271"
+          },
+          {
+            "t": "2025-09-26T17:01:09Z",
+            "actor": "arn:aws:iam::012345678901:root",
+            "svc": "iam",
+            "action": "DeleteUser",
+            "region": "ap-southeast-1",
+            "ip": "52.95.110.251",
+            "id": "eaa3de70-5d5a-4a30-ad81-339fb21c4ca7"
+          },
+          {
+            "t": "2025-09-24T16:16:20Z",
+            "actor": "arn:aws:iam::555566667777:user/alice",
+            "svc": "iam",
+            "action": "AttachUserPolicy",
+            "region": "eu-north-1",
+            "ip": "34.201.12.238",
+            "id": "11639d55-8029-4286-8891-7ea57d3e81cf"
+          }
+        ]
+      },
+      {
+        "type": "role_no_mfa",
+        "count": 2434,
+        "severity": "high",
+        "owner": "Security & Access Control",
+        "recommendation": "Require MFA for AssumeRole; enforce conditional IAM; add session policy checks.",
+        "examples": [
+          {
+            "t": "2025-09-20T18:29:52Z",
+            "actor": "arn:aws:sts::012345678901:assumed-role/Admin/alice",
+            "svc": "rds",
+            "action": "CreateDBInstance",
+            "region": "eu-west-1",
+            "ip": "18.196.30.187",
+            "id": "7a934e40-84c4-4b62-997e-f52d2c19a07e"
+          },
+          {
+            "t": "2025-09-28T10:47:17Z",
+            "actor": "arn:aws:sts::555566667777:assumed-role/Developer/alice",
+            "svc": "s3",
+            "action": "CreateBucket",
+            "region": "us-west-2",
+            "ip": "34.201.12.223",
+            "id": "a9a21692-ded3-4751-b160-1e865899e2a6"
+          },
+          {
+            "t": "2025-09-27T04:59:02Z",
+            "actor": "arn:aws:sts::111122223333:assumed-role/Developer/alice",
+            "svc": "iam",
+            "action": "DeleteUser",
+            "region": "us-west-2",
+            "ip": "18.196.30.125",
+            "id": "f49a1315-d02b-4b1d-9ef8-af0655e304c0"
+          }
+        ]
+      },
+      {
+        "type": "error_event",
+        "count": 2008,
+        "severity": "low",
+        "owner": "Backend & Workflow Automation",
+        "recommendation": "Alert on bursts; correlate with write ops; fix failing automation jobs.",
+        "examples": [
+          {
+            "t": "2025-09-28T20:00:41Z",
+            "actor": "arn:aws:sts::012345678901:assumed-role/Admin/bob",
+            "svc": "kms",
+            "action": "GenerateDataKey",
+            "region": "eu-north-1",
+            "ip": "34.201.12.107",
+            "id": "f0dec5eb-4348-4ed0-9191-dc7a704b107a"
+          },
+          {
+            "t": "2025-10-01T05:52:57Z",
+            "actor": "arn:aws:iam::555566667777:user/alice",
+            "svc": "sts",
+            "action": "AssumeRole",
+            "region": "eu-central-1",
+            "ip": "34.201.12.10",
+            "id": "c6c2036c-2eae-4971-9b3b-d4611f2345c3"
+          },
+          {
+            "t": "2025-09-21T03:47:07Z",
+            "actor": "arn:aws:iam::210987654321:user/david",
+            "svc": "lambda",
+            "action": "CreateFunction20150421",
+            "region": "eu-central-1",
+            "ip": "3.5.140.173",
+            "id": "4720e3ad-8466-4923-8d42-b2a51c454e7f"
+          }
+        ]
+      },
+      {
+        "type": "logging_disabled_attempt",
+        "count": 1574,
+        "severity": "critical",
+        "owner": "Security & Access Control",
+        "recommendation": "Block StopLogging with SCP; alert on attempts; verify CloudTrail is multi-region & immutable.",
+        "examples": [
+          {
+            "t": "2025-09-29T16:47:02Z",
+            "actor": "arn:aws:sts::012345678901:federated-user/userY",
+            "svc": "cloudtrail",
+            "action": "StopLogging",
+            "region": "eu-west-1",
+            "ip": "3.5.140.55",
+            "id": "4c4f30cc-44b0-41a9-826f-b48ca25b3d53"
+          },
+          {
+            "t": "2025-09-26T04:50:10Z",
+            "actor": "arn:aws:iam::012345678901:root",
+            "svc": "cloudtrail",
+            "action": "StopLogging",
+            "region": "ap-southeast-1",
+            "ip": "44.240.12.10",
+            "id": "dff38b7e-0350-4c45-95b6-a160469cad0f"
+          },
+          {
+            "t": "2025-09-28T20:09:09Z",
+            "actor": "arn:aws:iam::555566667777:root",
+            "svc": "cloudtrail",
+            "action": "StopLogging",
+            "region": "us-east-1",
+            "ip": "34.201.12.53",
+            "id": "441d578e-5eb8-41ac-80e9-826fba7cbc19"
+          }
+        ]
+      },
+      {
+        "type": "s3_data_change",
+        "count": 1562,
+        "severity": "medium",
+        "owner": "AI / NLP Processing",
+        "recommendation": "Enforce default encryption & bucket policies; require approvals for delete/write in sensitive buckets.",
+        "examples": [
+          {
+            "t": "2025-09-20T12:15:38Z",
+            "actor": "arn:aws:sts::111122223333:federated-user/userX",
+            "svc": "s3",
+            "action": "PutObject",
+            "region": "ap-southeast-1",
+            "ip": "3.5.140.244",
+            "id": "8a7d169c-bb17-4e89-9789-f777e9d068c8"
+          },
+          {
+            "t": "2025-09-23T07:26:34Z",
+            "actor": "arn:aws:sts::111122223333:federated-user/userX",
+            "svc": "s3",
+            "action": "PutObject",
+            "region": "eu-north-1",
+            "ip": "44.240.12.100",
+            "id": "c877d547-98c1-4b33-816a-61c1c08d5300"
+          },
+          {
+            "t": "2025-09-30T13:26:27Z",
+            "actor": "arn:aws:iam::012345678901:user/charlie",
+            "svc": "s3",
+            "action": "DeleteObject",
+            "region": "ap-southeast-1",
+            "ip": "52.95.110.42",
+            "id": "008a276a-a4de-460b-af4a-e4342014b88c"
+          }
+        ]
+      },
+      {
+        "type": "kms_decrypt_activity",
+        "count": 1075,
+        "severity": "medium",
+        "owner": "Security & Access Control",
+        "recommendation": "Scope KMS key IAM; add CMK key policies; monitor decrypt rates & IP reputation.",
+        "examples": [
+          {
+            "t": "2025-09-17T15:52:12Z",
+            "actor": "arn:aws:iam::111122223333:role/service-role/config",
+            "svc": "kms",
+            "action": "Decrypt",
+            "region": "ap-southeast-1",
+            "ip": "34.201.12.20",
+            "id": "064852d2-ca9b-4c77-ba2f-cffda979adf7"
+          },
+          {
+            "t": "2025-09-26T20:09:45Z",
+            "actor": "arn:aws:sts::111122223333:assumed-role/Admin/bob",
+            "svc": "kms",
+            "action": "Decrypt",
+            "region": "eu-central-1",
+            "ip": "52.95.110.117",
+            "id": "be694460-74c5-4e22-9f96-ceb880069512"
+          },
+          {
+            "t": "2025-09-27T02:19:02Z",
+            "actor": "arn:aws:sts::111122223333:federated-user/userX",
+            "svc": "kms",
+            "action": "Decrypt",
+            "region": "us-west-2",
+            "ip": "34.201.12.246",
+            "id": "66e24b53-f976-453f-9a93-cac338821152"
+          }
+        ]
+      },
+      {
+        "type": "s3_data_access",
+        "count": 374,
+        "severity": "low",
+        "owner": "AI / NLP Processing",
+        "recommendation": "Tag buckets with data classifications; add anomaly detection on GetObject spikes.",
+        "examples": [
+          {
+            "t": "2025-09-17T20:25:13Z",
+            "actor": "arn:aws:sts::555566667777:assumed-role/Admin/bob",
+            "svc": "s3",
+            "action": "GetObject",
+            "region": "eu-west-1",
+            "ip": "52.95.110.239",
+            "id": "20c11389-4706-4abe-876e-a701314b2a79"
+          },
+          {
+            "t": "2025-09-30T19:23:27Z",
+            "actor": "arn:aws:sts::210987654321:federated-user/userY",
+            "svc": "s3",
+            "action": "GetObject",
+            "region": "eu-central-1",
+            "ip": "52.95.110.84",
+            "id": "f1f55fd7-dd96-45a0-bc9b-6b931c0b9704"
+          },
+          {
+            "t": "2025-09-25T15:19:15Z",
+            "actor": "arn:aws:iam::111122223333:user/david",
+            "svc": "s3",
+            "action": "GetObject",
+            "region": "us-east-1",
+            "ip": "44.240.12.174",
+            "id": "c746b2b7-b73b-40bc-96d4-b58e238e123b"
+          }
+        ]
+      }
+    ],
+    "actions_by_owner": {
+      "Security & Access Control": [
+        {
+          "issue": "root_usage",
+          "severity": "high",
+          "action": "Disable root API keys; enable root account MFA; create break-glass procedure only."
+        },
+        {
+          "issue": "privilege_change",
+          "severity": "high",
+          "action": "Review Admin policy attachments; require approvals; monitor access key creations."
+        },
+        {
+          "issue": "role_no_mfa",
+          "severity": "high",
+          "action": "Require MFA for AssumeRole; enforce conditional IAM; add session policy checks."
+        },
+        {
+          "issue": "logging_disabled_attempt",
+          "severity": "critical",
+          "action": "Block StopLogging with SCP; alert on attempts; verify CloudTrail is multi-region & immutable."
+        },
+        {
+          "issue": "kms_decrypt_activity",
+          "severity": "medium",
+          "action": "Scope KMS key IAM; add CMK key policies; monitor decrypt rates & IP reputation."
+        }
+      ],
+      "Backend & Workflow Automation": [
+        {
+          "issue": "error_event",
+          "severity": "low",
+          "action": "Alert on bursts; correlate with write ops; fix failing automation jobs."
+        }
+      ],
+      "AI / NLP Processing": [
+        {
+          "issue": "s3_data_change",
+          "severity": "medium",
+          "action": "Enforce default encryption & bucket policies; require approvals for delete/write in sensitive buckets."
+        },
+        {
+          "issue": "s3_data_access",
+          "severity": "low",
+          "action": "Tag buckets with data classifications; add anomaly detection on GetObject spikes."
+        }
+      ]
+    }
+  },
+  "highlights": {
+    "total_events": 25000,
+    "unique_principals": 56,
+    "read_vs_write_ratio": {
+      "read": 0.5,
+      "write": 0.84
+    },
+    "error_rate": 0.08,
+    "top_services": [
+      {
+        "service": "rds",
+        "count": 3292
+      },
+      {
+        "service": "cloudtrail",
+        "count": 3123
+      },
+      {
+        "service": "kms",
+        "count": 3117
+      },
+      {
+        "service": "lambda",
+        "count": 3104
+      },
+      {
+        "service": "sts",
+        "count": 3103
+      }
+    ]
+  },
+  "event_rollups": {
+    "by_service": [
+      {
+        "service": "iam",
+        "counts": {
+          "read": 401,
+          "write": 2697,
+          "error": 245
+        }
+      },
+      {
+        "service": "lambda",
+        "counts": {
+          "read": 521,
+          "write": 2583,
+          "error": 255
+        }
+      },
+      {
+        "service": "sts",
+        "counts": {
+          "read": 1608,
+          "write": 1495,
+          "error": 230
+        }
+      },
+      {
+        "service": "kms",
+        "counts": {
+          "read": 537,
+          "write": 2580,
+          "error": 236
+        }
+      },
+      {
+        "service": "s3",
+        "counts": {
+          "read": 374,
+          "write": 2708,
+          "error": 253
+        }
+      },
+      {
+        "service": "cloudtrail",
+        "counts": {
+          "read": 0,
+          "write": 3123,
+          "error": 250
+        }
+      },
+      {
+        "service": "rds",
+        "counts": {
+          "read": 0,
+          "write": 3292,
+          "error": 283
+        }
+      },
+      {
+        "service": "ec2",
+        "counts": {
+          "read": 521,
+          "write": 2560,
+          "error": 256
+        }
+      }
+    ],
+    "by_region": [
+      {
+        "region": "eu-central-1",
+        "count": 3596
+      },
+      {
+        "region": "us-east-1",
+        "count": 3621
+      },
+      {
+        "region": "ap-southeast-1",
+        "count": 3565
+      },
+      {
+        "region": "eu-north-1",
+        "count": 3565
+      },
+      {
+        "region": "us-west-2",
+        "count": 3630
+      },
+      {
+        "region": "eu-west-1",
+        "count": 3523
+      },
+      {
+        "region": "ap-northeast-1",
+        "count": 3500
+      }
+    ]
+  },
+  "actors": {
+    "top_principals": [
+      {
+        "principal_arn": "arn:aws:iam::012345678901:root",
+        "events": 1275
+      },
+      {
+        "principal_arn": "arn:aws:iam::210987654321:root",
+        "events": 1275
+      },
+      {
+        "principal_arn": "arn:aws:iam::111122223333:root",
+        "events": 1218
+      },
+      {
+        "principal_arn": "arn:aws:iam::555566667777:root",
+        "events": 1203
+      },
+      {
+        "principal_arn": "arn:aws:sts::111122223333:federated-user/userX",
+        "events": 644
+      },
+      {
+        "principal_arn": "arn:aws:sts::012345678901:federated-user/userY",
+        "events": 644
+      },
+      {
+        "principal_arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "events": 635
+      },
+      {
+        "principal_arn": "arn:aws:sts::555566667777:federated-user/userY",
+        "events": 629
+      },
+      {
+        "principal_arn": "arn:aws:sts::555566667777:federated-user/userX",
+        "events": 629
+      },
+      {
+        "principal_arn": "arn:aws:sts::111122223333:federated-user/userY",
+        "events": 604
+      }
+    ]
+  },
+  "gdpr_summary": {
+    "article_5_2_accountability": {
+      "status": "partially_met",
+      "evidence": [
+        {
+          "type": "metric",
+          "name": "cloudtrail_coverage",
+          "note": "Events observed across services/regions"
+        }
+      ]
+    },
+    "article_30_records_of_processing": {
+      "status": "informational",
+      "processing_observations": [
+        {
+          "system": "Amazon S3",
+          "purpose_inferred": "Storage/backup",
+          "evidence": [
+            {
+              "service": "s3",
+              "events": 0
+            }
+          ]
+        }
+      ],
+      "gaps": [
+        "Need controller/DPO contacts, retention periods, recipients"
+      ]
+    },
+    "article_32_security": {
+      "status": "partially_met",
+      "findings": [
+        {
+          "control": "KMS usage",
+          "observed": true,
+          "events": 3117
+        },
+        {
+          "control": "Privileged policy attach",
+          "observed": true,
+          "events": 784
+        }
+      ]
+    },
+    "article_33_breach_notification": {
+      "status": "no_incident_detected",
+      "potential_incidents": [],
+      "timer_rules": {
+        "window_hours": 72
+      }
+    }
+  },
+  "records_compact": [
+    {
+      "t": "2025-09-18T18:22:07Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Admin/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "eu-central-1",
+      "ip": "34.201.12.152",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::210987654321:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "1ed398e2-b627-41d5-a3b7-65133db04271",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-29T03:43:25Z",
+      "svc": "lambda",
+      "action": "CreateFunction20150421",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/david",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "34.201.12.224",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_51"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-west-1:555566667777:function:fn_19"
+      },
+      "err": null,
+      "id": "b0571280-e003-4c9d-9930-02aac6d05dc5",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-29T04:27:28Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/charlie",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.142",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "74d269e1-f921-40b2-97e3-844275fe9113",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-17T15:52:12Z",
+      "svc": "kms",
+      "action": "Decrypt",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/config",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "34.201.12.20",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:us-west-2:012345678901:key/a20b0395-6726-413c-ad42-2535fde61bad"
+      },
+      "err": null,
+      "id": "064852d2-ca9b-4c77-ba2f-cffda979adf7",
+      "risk_tags": [
+        "kms_decrypt_activity"
+      ]
+    },
+    {
+      "t": "2025-09-20T12:15:38Z",
+      "svc": "s3",
+      "action": "PutObject",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userX",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "3.5.140.244",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-28",
+        "key": "test-file-892.txt"
+      },
+      "resp": {
+        "req_id": "b8c7b392-ad5d-4c31-8a98-3afd43c3c4be"
+      },
+      "err": null,
+      "id": "8a7d169c-bb17-4e89-9789-f777e9d068c8",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-25T19:12:29Z",
+      "svc": "cloudtrail",
+      "action": "StartLogging",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::210987654321:user/david",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "eu-north-1",
+      "ip": "52.95.110.80",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "e43066b7-ff42-4ed2-860e-ca7b12a0575b",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T04:43:47Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/david",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "us-west-2",
+      "ip": "34.201.12.215",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "1cff3950-3a75-4ea8-ae61-61f269dd077d",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-21T13:03:37Z",
+      "svc": "ec2",
+      "action": "TerminateInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/config",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "eu-north-1",
+      "ip": "18.196.30.201",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-9c5de66f"
+        ]
+      },
+      "err": null,
+      "id": "00a6a19c-1d28-43cc-8d7e-18455392650d",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T10:36:50Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/charlie",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "eu-west-1",
+      "ip": "3.5.140.136",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "2da0f3e9-ef84-4383-ab4a-86f7af0d9141",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T17:30:31Z",
+      "svc": "cloudtrail",
+      "action": "StartLogging",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/guardduty",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "18.196.30.52",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "d2d96aa7-c6a6-4c05-9bb3-b8059cce4524",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T00:59:08Z",
+      "svc": "lambda",
+      "action": "UpdateFunctionConfiguration",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/config",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "eu-west-1",
+      "ip": "44.240.12.141",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_43"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:ap-southeast-1:111122223333:function:fn_35"
+      },
+      "err": null,
+      "id": "76583ecb-1981-4ec7-a0f9-e862561f716d",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-29T06:21:08Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "34.201.12.226",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "80593c96-458e-435b-a7e0-00fe53b91cda",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-28T20:00:41Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Admin/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "eu-north-1",
+      "ip": "34.201.12.107",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-northeast-1:012345678901:key/01276a44-ddb7-4ce9-afd7-2c188d5dbdef"
+      },
+      "err": {
+        "code": "AccessDenied",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "f0dec5eb-4348-4ed0-9191-dc7a704b107a",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-19T00:13:45Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.201",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-16",
+        "key": "test-file-6440.txt"
+      },
+      "resp": {
+        "req_id": "a0ff613f-cbe2-4e43-a349-f084de4bbe21"
+      },
+      "err": null,
+      "id": "f5ef5dea-bc57-4ddd-a700-0795c1f38a8a",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-20T06:23:34Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/cloudtrail",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "eu-north-1",
+      "ip": "3.5.140.10",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "34d803fc-fa66-45ca-b4e0-0f2b7f4746eb",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-10-01T05:52:57Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "34.201.12.10",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": {
+        "code": "AccessDenied",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "c6c2036c-2eae-4971-9b3b-d4611f2345c3",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-24T19:35:02Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Admin/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "3.5.140.101",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-north-1:210987654321:key/e0913118-84dd-4f6b-928e-8202a06ef943"
+      },
+      "err": null,
+      "id": "05c95a0f-8f7b-4801-8935-05048c3255f1",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-29T02:38:56Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/cloudtrail",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "eu-central-1",
+      "ip": "18.196.30.73",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "4a6f8f50-6145-4b33-8ac9-57b9d231ed8c",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T12:13:47Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "us-west-2",
+      "ip": "52.95.110.1",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-c55667c7"
+        ]
+      },
+      "err": null,
+      "id": "9838c7ac-1ed9-4efd-9d9c-5f9dec48657e",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-26T15:04:29Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userY",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "34.201.12.53",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-west-1:210987654321:key/6d6cd766-3055-42f4-a41d-bbbfc38cf998"
+      },
+      "err": null,
+      "id": "ad1b73c2-1ff3-4f5a-8010-ba6ba404bef0",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-24T16:50:40Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "eu-west-1",
+      "ip": "44.240.12.114",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-4195fdfb"
+        ]
+      },
+      "err": null,
+      "id": "8b6e599b-245b-4dd3-aa15-0eb908486cb4",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T13:57:20Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.130",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-7031cbe1"
+        ]
+      },
+      "err": null,
+      "id": "d729d68b-0ef0-4059-a000-9cac24c4aa7f",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-25T08:44:04Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.103",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "2618b953-8a83-4835-acef-eccf5dc9afef",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-10-01T11:12:21Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userY",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.184",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-north-1:012345678901:key/60766a76-57a3-4d19-b6e8-a6a8f2db2d59"
+      },
+      "err": null,
+      "id": "14bfb431-c2a3-4a48-8fbf-42c1b0127565",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-22T15:00:22Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/cloudtrail",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "eu-north-1",
+      "ip": "52.95.110.238",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "cb09004c-2095-4e2a-bcd8-379e26e7ed3a",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T00:43:04Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userY",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "eu-north-1",
+      "ip": "34.201.12.136",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_51"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-west-1:210987654321:function:fn_31"
+      },
+      "err": null,
+      "id": "ffafb4d0-584b-4620-97a4-627399380e9d",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-24T21:05:00Z",
+      "svc": "ec2",
+      "action": "TerminateInstances",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "18.196.30.223",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-e12c9db8"
+        ]
+      },
+      "err": null,
+      "id": "d11c992f-7056-4d5a-a230-4a0ca019d709",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-19T09:55:01Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::210987654321:federated-user/userY",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "us-west-2",
+      "ip": "18.196.30.213",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-098dab30"
+        ]
+      },
+      "err": null,
+      "id": "5afb024f-b4ad-4602-a268-65f9486a7e49",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-21T08:41:09Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "3.5.140.188",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "84737496-f001-43ac-a7c8-896c017c0562",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T01:40:13Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/cloudtrail",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "ap-northeast-1",
+      "ip": "3.5.140.83",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "93f9627d-e19c-48f4-8874-b1ca4ccd4f7a",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T03:41:55Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/guardduty",
+        "accountId": "210987654321"
+      },
+      "acct": "210987654321",
+      "region": "eu-central-1",
+      "ip": "44.240.12.207",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-northeast-1:555566667777:key/50286e35-282e-4c59-87ca-70b03fb62c67"
+      },
+      "err": null,
+      "id": "976de443-c4ba-44f4-b8a8-ea3ec782e22f",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T07:26:34Z",
+      "svc": "s3",
+      "action": "PutObject",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userX",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "eu-north-1",
+      "ip": "44.240.12.100",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-32",
+        "key": "test-file-8981.txt"
+      },
+      "resp": {
+        "req_id": "a65c29e3-a4b4-4762-92a8-46ab0a85fc2d"
+      },
+      "err": null,
+      "id": "c877d547-98c1-4b33-816a-61c1c08d5300",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-26T20:09:45Z",
+      "svc": "kms",
+      "action": "Decrypt",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Admin/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "52.95.110.117",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-west-1:555566667777:key/4416a034-91ef-4506-9c5b-5785fd881d1d"
+      },
+      "err": null,
+      "id": "be694460-74c5-4e22-9f96-ceb880069512",
+      "risk_tags": [
+        "kms_decrypt_activity"
+      ]
+    },
+    {
+      "t": "2025-09-30T13:26:27Z",
+      "svc": "s3",
+      "action": "DeleteObject",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/charlie",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.42",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-7",
+        "key": "test-file-3569.txt"
+      },
+      "resp": {
+        "req_id": "6521b34d-5a59-478d-b1b4-958b2ae0589e"
+      },
+      "err": null,
+      "id": "008a276a-a4de-460b-af4a-e4342014b88c",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-22T09:25:59Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userY",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "eu-north-1",
+      "ip": "52.95.110.245",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-west-1:111122223333:key/4823ec3c-e364-4a8c-a3cb-a560f11c4344"
+      },
+      "err": null,
+      "id": "945daa91-d72a-4977-8ba5-67cf9e3c3fd9",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-20T18:29:52Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Admin/alice",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "eu-west-1",
+      "ip": "18.196.30.187",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "7a934e40-84c4-4b62-997e-f52d2c19a07e",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-26T17:01:09Z",
+      "svc": "iam",
+      "action": "DeleteUser",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.251",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::210987654321:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "eaa3de70-5d5a-4a30-ad81-339fb21c4ca7",
+      "risk_tags": [
+        "privilege_change",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-28T23:51:42Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "52.95.110.208",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "f98d6400-2ddb-47f2-90de-f97760981904",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-21T03:47:07Z",
+      "svc": "lambda",
+      "action": "CreateFunction20150421",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::210987654321:user/david",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "eu-central-1",
+      "ip": "3.5.140.173",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_90"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-central-1:210987654321:function:fn_67"
+      },
+      "err": {
+        "code": "InvalidParameter",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "4720e3ad-8466-4923-8d42-b2a51c454e7f",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-10-01T06:39:27Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/config",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "ap-northeast-1",
+      "ip": "34.201.12.63",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-95de86f6"
+        ]
+      },
+      "err": null,
+      "id": "33a489f1-d666-461b-b3ab-48d1b5212adb",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-19T07:04:33Z",
+      "svc": "lambda",
+      "action": "UpdateFunctionConfiguration",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "44.240.12.87",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_93"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:us-east-1:210987654321:function:fn_20"
+      },
+      "err": {
+        "code": "AccessDenied",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "db11f2db-581b-4db3-a59f-8332d70f5749",
+      "risk_tags": [
+        "error_event",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-27T18:26:44Z",
+      "svc": "lambda",
+      "action": "UpdateFunctionConfiguration",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::210987654321:root",
+        "accountId": "210987654321"
+      },
+      "acct": "012345678901",
+      "region": "us-west-2",
+      "ip": "3.5.140.26",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_100"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-central-1:555566667777:function:fn_44"
+      },
+      "err": null,
+      "id": "ba2f9399-e253-4290-bd00-2a64928cf2a8",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-19T10:23:50Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "eu-central-1",
+      "ip": "18.196.30.96",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-9",
+        "key": "test-file-9203.txt"
+      },
+      "resp": {
+        "req_id": "74b85f7e-f799-4dff-bf45-e0400b6e8715"
+      },
+      "err": null,
+      "id": "e4351f41-7754-46cd-9b88-394bd3a07a74",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-17T18:00:36Z",
+      "svc": "s3",
+      "action": "DeleteObject",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/cloudtrail",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "ap-southeast-1",
+      "ip": "18.196.30.170",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-49",
+        "key": "test-file-4728.txt"
+      },
+      "resp": {
+        "req_id": "6bab5688-c056-4e54-91da-49cee75554ac"
+      },
+      "err": null,
+      "id": "e89b293f-a5f2-4c77-a892-19e6b47c8e90",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-25T07:47:00Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::210987654321:federated-user/userY",
+        "accountId": "210987654321"
+      },
+      "acct": "012345678901",
+      "region": "us-east-1",
+      "ip": "18.196.30.244",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-northeast-1:012345678901:key/1d2b4a0e-5717-4940-932c-3e18de95c93e"
+      },
+      "err": null,
+      "id": "6dd2d14b-4f53-4a45-a14a-398452565dd7",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-21T12:20:09Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Admin/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "eu-central-1",
+      "ip": "44.240.12.16",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-central-1:012345678901:key/d3ac0170-1e67-4734-b9bc-4fe83d669a49"
+      },
+      "err": null,
+      "id": "87498166-5657-4046-bf9f-f81e8945c7eb",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T09:37:56Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "3.5.140.49",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "37ef766f-d4c4-4682-b26f-6cb37f6a01f1",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-26T12:17:30Z",
+      "svc": "s3",
+      "action": "PutObject",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::210987654321:root",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "us-west-2",
+      "ip": "34.201.12.177",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-6",
+        "key": "test-file-2406.txt"
+      },
+      "resp": {
+        "req_id": "cd679687-a64d-47d6-af37-deea876d6e34"
+      },
+      "err": null,
+      "id": "a03c308f-aaf6-4063-a5a3-b46ad54d319f",
+      "risk_tags": [
+        "root_usage",
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-29T05:43:05Z",
+      "svc": "cloudtrail",
+      "action": "StartLogging",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Developer/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "34.201.12.110",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "bbed3004-cdf3-4952-9d2c-817299fb47a6",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-18T23:35:53Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "ap-southeast-1",
+      "ip": "18.196.30.249",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-north-1:555566667777:key/23adafa8-0362-4858-960f-08fbb8616649"
+      },
+      "err": null,
+      "id": "1e14b88a-a44d-4056-8e8a-ff4a18836e73",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-30T21:57:27Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Developer/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "eu-central-1",
+      "ip": "52.95.110.26",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "3b6bce00-05c3-4d90-a7c8-393f01b8dd3f",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-24T16:16:20Z",
+      "svc": "iam",
+      "action": "AttachUserPolicy",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "eu-north-1",
+      "ip": "34.201.12.238",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::555566667777:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "11639d55-8029-4286-8891-7ea57d3e81cf",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-28T10:47:17Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Developer/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "34.201.12.223",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "bucket": "example-bucket-25",
+        "key": "test-file-116.txt"
+      },
+      "resp": {
+        "req_id": "1477c13d-d1cf-41f6-a875-daad2a5dfb63"
+      },
+      "err": null,
+      "id": "a9a21692-ded3-4751-b160-1e865899e2a6",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-19T20:14:11Z",
+      "svc": "iam",
+      "action": "AttachUserPolicy",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/config",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "eu-central-1",
+      "ip": "3.5.140.171",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::111122223333:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "fa423c50-598e-4b01-8eee-4f906be48393",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-26T17:01:51Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/guardduty",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.67",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-bd3034fb"
+        ]
+      },
+      "err": null,
+      "id": "92bd9c96-a95a-4877-9492-70af08bb0777",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-19T18:24:56Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userX",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "us-east-1",
+      "ip": "52.95.110.44",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-45",
+        "key": "test-file-2994.txt"
+      },
+      "resp": {
+        "req_id": "afeea03b-2981-4805-93e3-9446922a1f35"
+      },
+      "err": null,
+      "id": "05e51d11-47a8-49d2-a6aa-7c7f6ff423dc",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-29T17:06:29Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::210987654321:root",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "18.196.30.53",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "0bf1d432-77e8-4989-8a85-c02a174129c4",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-30T12:04:54Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/config",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "34.201.12.30",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::210987654321:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "0ea3dc20-fa43-403f-9449-0920765bf73a",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-17T21:09:55Z",
+      "svc": "lambda",
+      "action": "UpdateFunctionConfiguration",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "ap-northeast-1",
+      "ip": "18.196.30.62",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_63"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:ap-southeast-1:111122223333:function:fn_10"
+      },
+      "err": null,
+      "id": "3e1d22a8-2429-45c3-a7d6-e6347b0f8dc7",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-25T07:16:42Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userY",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "44.240.12.214",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-7",
+        "key": "test-file-8112.txt"
+      },
+      "resp": {
+        "req_id": "f77636d3-fa7d-435c-810e-d9bd5c1ce37e"
+      },
+      "err": {
+        "code": "ThrottlingException",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "5b79e18a-4e25-47b5-9855-9e275e57648e",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-25T03:02:45Z",
+      "svc": "iam",
+      "action": "CreateUser",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/config",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.37",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::012345678901:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "3a5b5eec-00aa-4de0-9ed9-4f4a51f793dc",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-24T17:12:36Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/david",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "18.196.30.126",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-west-1:210987654321:key/e6ae812e-3dec-456b-96f0-13c092aed320"
+      },
+      "err": null,
+      "id": "d0d89f05-3e66-4d35-9a08-1ddb6af3a290",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-20T00:01:31Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::210987654321:user/david",
+        "accountId": "210987654321"
+      },
+      "acct": "012345678901",
+      "region": "eu-north-1",
+      "ip": "3.5.140.104",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "ceabe1c9-d4af-49e7-99b6-94c9a99ed003",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-26T18:15:30Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Developer/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "us-west-2",
+      "ip": "34.201.12.185",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "functionName": "fn_64"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:ap-northeast-1:555566667777:function:fn_77"
+      },
+      "err": null,
+      "id": "3a32bc90-a55a-4992-90b9-15d84e455a94",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T04:59:02Z",
+      "svc": "iam",
+      "action": "DeleteUser",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Developer/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "18.196.30.125",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::210987654321:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "f49a1315-d02b-4b1d-9ef8-af0655e304c0",
+      "risk_tags": [
+        "privilege_change",
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-27T09:33:54Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/david",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "eu-north-1",
+      "ip": "18.196.30.101",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "a55058e0-e697-4e1f-b4c9-333f1ae35d32",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-30T14:09:04Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userY",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "44.240.12.37",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::012345678901:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "98c7bf7e-0a24-43e1-82fe-14e1746ae6a4",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-19T11:56:38Z",
+      "svc": "iam",
+      "action": "DeleteUser",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-west-2",
+      "ip": "52.95.110.220",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::012345678901:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "8a87eb48-3d3c-45e4-8e8e-4f4e74a7f8ef",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-29T01:41:05Z",
+      "svc": "ec2",
+      "action": "TerminateInstances",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Developer/alice",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "ap-northeast-1",
+      "ip": "18.196.30.30",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-31335e0f"
+        ]
+      },
+      "err": null,
+      "id": "5521c25f-4cc2-4882-ba03-ee01ab20d6d9",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-19T02:29:53Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userY",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "eu-central-1",
+      "ip": "52.95.110.58",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": {
+        "code": "AccessDenied",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "9523d355-ed36-4123-be0d-7ba30e308ba0",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-22T06:01:10Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::210987654321:federated-user/userY",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "52.95.110.159",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "ed4b7c48-c5c3-406d-8771-98f0974c260a",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-18T15:55:40Z",
+      "svc": "cloudtrail",
+      "action": "StartLogging",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "us-east-1",
+      "ip": "18.196.30.207",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "6536e279-3eb0-4749-b45c-d087f7477312",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-23T03:57:10Z",
+      "svc": "ec2",
+      "action": "TerminateInstances",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Developer/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "us-west-2",
+      "ip": "3.5.140.66",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-34e860fa"
+        ]
+      },
+      "err": null,
+      "id": "ad3d73db-6857-403d-a3e8-c357dcbe0b52",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-28T06:11:16Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "44.240.12.239",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_91"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-central-1:210987654321:function:fn_23"
+      },
+      "err": {
+        "code": "ThrottlingException",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "bc59f2c7-6405-437a-aa6a-b3cf65e75bc6",
+      "risk_tags": [
+        "error_event",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-19T06:23:25Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userY",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "18.196.30.147",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "50503b41-0e45-4495-ab2e-e3cefe9f57fc",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T19:31:42Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "ap-northeast-1",
+      "ip": "34.201.12.210",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "70dbaf1c-1958-4443-b60c-daf3f7efcc35",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-22T21:25:37Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/cloudtrail",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "44.240.12.102",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_10"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-central-1:555566667777:function:fn_14"
+      },
+      "err": null,
+      "id": "4809c9f4-5847-4685-8f80-d23d37e5d505",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-20T15:37:56Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::210987654321:assumed-role/Developer/alice",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "eu-central-1",
+      "ip": "3.5.140.180",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "7fbaafbc-5f96-4b56-bafa-3dd0531ba57a",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-29T09:16:27Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::210987654321:user/charlie",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "eu-north-1",
+      "ip": "3.5.140.79",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::111122223333:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "e183f024-036f-440a-863d-142ed59fab20",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-29T11:11:52Z",
+      "svc": "lambda",
+      "action": "UpdateFunctionConfiguration",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "eu-north-1",
+      "ip": "52.95.110.76",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_33"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-west-1:210987654321:function:fn_67"
+      },
+      "err": null,
+      "id": "02f82bba-62c2-4285-a905-9c4eb76a5135",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-23T17:04:13Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "3.5.140.112",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "a6c39176-72fc-43c6-8423-a25e73887dd1",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-25T00:30:57Z",
+      "svc": "ec2",
+      "action": "TerminateInstances",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/david",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "eu-north-1",
+      "ip": "3.5.140.178",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-91ad04f1"
+        ]
+      },
+      "err": null,
+      "id": "218ea8d9-c048-4571-bb15-91c1b87255e9",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-17T20:25:13Z",
+      "svc": "s3",
+      "action": "GetObject",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Admin/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "eu-west-1",
+      "ip": "52.95.110.239",
+      "ro": true,
+      "mfa": "false",
+      "req": {
+        "bucket": "example-bucket-48",
+        "key": "test-file-9161.txt"
+      },
+      "resp": {
+        "req_id": "c373caab-bcbd-416e-8ad1-db8019e461bb"
+      },
+      "err": null,
+      "id": "20c11389-4706-4abe-876e-a701314b2a79",
+      "risk_tags": [
+        "role_no_mfa",
+        "s3_data_access"
+      ]
+    },
+    {
+      "t": "2025-09-29T06:33:12Z",
+      "svc": "s3",
+      "action": "DeleteObject",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::210987654321:user/bob",
+        "accountId": "210987654321"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "52.95.110.171",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-50",
+        "key": "test-file-8.txt"
+      },
+      "resp": {
+        "req_id": "48273589-24c1-4f5b-a770-5ca8ae5ebd1c"
+      },
+      "err": null,
+      "id": "a8ce3911-4d71-4ada-a121-072566fdc814",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-20T08:39:55Z",
+      "svc": "iam",
+      "action": "AttachUserPolicy",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Admin/alice",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "us-west-2",
+      "ip": "3.5.140.185",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::210987654321:user/new-user"
+        }
+      },
+      "err": {
+        "code": "AccessDenied",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "d2412aac-eec2-446c-8813-cd90b74b25d5",
+      "risk_tags": [
+        "error_event",
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-28T05:45:49Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Developer/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-west-2",
+      "ip": "3.5.140.54",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "188bbf7b-459b-4954-bc22-49d175608dfd",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-18T12:01:52Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "34.201.12.74",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "dc4e0229-e7f0-43fb-9237-ec4420b69833",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T22:08:30Z",
+      "svc": "s3",
+      "action": "PutObject",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/config",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "eu-central-1",
+      "ip": "34.201.12.93",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-42",
+        "key": "test-file-5735.txt"
+      },
+      "resp": {
+        "req_id": "33fe4e34-ce48-438b-a0b9-5c4102d4d84a"
+      },
+      "err": null,
+      "id": "887dbb5e-e05c-46e7-b536-1a2b82791cea",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-19T15:04:12Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Admin/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "3.5.140.142",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "functionName": "fn_48"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-north-1:111122223333:function:fn_76"
+      },
+      "err": null,
+      "id": "842d5c01-ed20-4d8c-9a18-9a723b2ae03f",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-24T05:04:53Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "ap-northeast-1",
+      "ip": "18.196.30.90",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_15"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:us-west-2:111122223333:function:fn_41"
+      },
+      "err": null,
+      "id": "c521d873-5f20-44d7-9b58-147a1568aa08",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-29T19:26:08Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Developer/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "eu-north-1",
+      "ip": "34.201.12.205",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-southeast-1:210987654321:key/1fc06547-725b-41a1-9ae8-bee8c3278956"
+      },
+      "err": null,
+      "id": "50d7ef65-d573-44fd-a747-0d9e1e011cb1",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-19T04:30:14Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/guardduty",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "ap-northeast-1",
+      "ip": "3.5.140.234",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-5f772107"
+        ]
+      },
+      "err": null,
+      "id": "9d4b7a93-c522-49a9-bf5a-4d7b14cdb24e",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-22T16:32:23Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/guardduty",
+        "accountId": "210987654321"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "34.201.12.145",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-dece7690"
+        ]
+      },
+      "err": null,
+      "id": "9ace7472-9f24-4ad2-ab0f-a9c3a7ce0bd7",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T22:39:02Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "eu-west-1",
+      "ip": "52.95.110.26",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "6b65b19b-3720-46f9-903e-d797a4fad4c9",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-19T22:50:44Z",
+      "svc": "lambda",
+      "action": "CreateFunction20150421",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userX",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "eu-west-1",
+      "ip": "52.95.110.38",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_8"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:ap-northeast-1:210987654321:function:fn_28"
+      },
+      "err": null,
+      "id": "5d913286-a5df-4226-840c-d8821792f6ba",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-24T01:02:19Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userY",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "3.5.140.144",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-fbf601fa"
+        ]
+      },
+      "err": null,
+      "id": "ea5403dd-b2f5-440d-be72-0c79cf72da86",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-20T08:05:57Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::210987654321:federated-user/userY",
+        "accountId": "210987654321"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "44.240.12.28",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "af8bed33-1477-4c18-8f59-c4337dc56b59",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-19T12:09:46Z",
+      "svc": "s3",
+      "action": "PutObject",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "eu-north-1",
+      "ip": "34.201.12.131",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-9",
+        "key": "test-file-580.txt"
+      },
+      "resp": {
+        "req_id": "28df5a19-3017-41ed-b009-69db5310f270"
+      },
+      "err": null,
+      "id": "2c587091-b34d-4444-9c4c-f1eae1ed84e0",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-19T07:24:31Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userX",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "eu-central-1",
+      "ip": "52.95.110.249",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": {
+        "code": "InvalidParameter",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "c720d18f-738e-42e4-85fe-49692ee4a337",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-25T02:44:37Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Developer/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "eu-north-1",
+      "ip": "44.240.12.237",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "ae2464d3-8ac7-4198-afc9-af89d7875f0b",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-25T01:24:33Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::210987654321:assumed-role/Developer/bob",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "34.201.12.165",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "functionName": "fn_18"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-west-1:555566667777:function:fn_56"
+      },
+      "err": null,
+      "id": "d44a2930-1620-4d98-a2bd-caf3ab663047",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T14:39:02Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userX",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "18.196.30.2",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-657c30d4"
+        ]
+      },
+      "err": null,
+      "id": "ec64bdd4-abfa-44fe-b6af-026532861627",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-30T14:10:29Z",
+      "svc": "s3",
+      "action": "DeleteObject",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "34.201.12.218",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-46",
+        "key": "test-file-3210.txt"
+      },
+      "resp": {
+        "req_id": "4bd79ae6-10a0-4839-9eec-05f2f38f0abd"
+      },
+      "err": null,
+      "id": "1a7aafc8-6918-4d5f-b920-dc9877c49cab",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-17T18:16:28Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/config",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "ap-southeast-1",
+      "ip": "34.201.12.243",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-north-1:210987654321:key/d13438a3-e3f7-40d9-93af-b1b1d830676c"
+      },
+      "err": null,
+      "id": "0a52c10b-9b1b-490b-a120-0bf5aa9cf678",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-10-01T09:19:44Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/guardduty",
+        "accountId": "210987654321"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.117",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": {
+        "code": "ThrottlingException",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "8e05c3b7-4299-4bec-b345-ac91ad6f64ab",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-30T04:13:12Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/config",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "eu-central-1",
+      "ip": "34.201.12.110",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-b035ee94"
+        ]
+      },
+      "err": null,
+      "id": "86fea1ea-7124-475d-a399-e2134b36eb4a",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T07:54:34Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/david",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "44.240.12.234",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-b8373a5f"
+        ]
+      },
+      "err": {
+        "code": "InvalidParameter",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "8e19d01a-8066-461f-977c-0d8da7e2b977",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-30T13:59:24Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/cloudtrail",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "eu-central-1",
+      "ip": "34.201.12.59",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "d1319a1e-49cf-4f88-8391-a34a40ed3699",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T22:53:10Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::210987654321:federated-user/userY",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "eu-west-1",
+      "ip": "18.196.30.149",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_97"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-north-1:012345678901:function:fn_23"
+      },
+      "err": null,
+      "id": "57edd272-5110-4da1-b8a4-67f3866379b8",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-17T19:52:08Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/cloudtrail",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "3.5.140.245",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": {
+        "code": "AccessDenied",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "ab934397-ee52-4351-a7c5-78aac13690d3",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-23T21:29:25Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "44.240.12.35",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::111122223333:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "fd925f12-ee70-401f-a59d-abdbb09f6f2b",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-20T09:29:20Z",
+      "svc": "iam",
+      "action": "AttachUserPolicy",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "eu-west-1",
+      "ip": "3.5.140.6",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::555566667777:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "00f5314e-65f8-4ae1-934b-71f7c9883fd2",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-29T16:47:02Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userY",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "eu-west-1",
+      "ip": "3.5.140.55",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "4c4f30cc-44b0-41a9-826f-b48ca25b3d53",
+      "risk_tags": [
+        "logging_disabled_attempt"
+      ]
+    },
+    {
+      "t": "2025-09-26T04:50:10Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.10",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "dff38b7e-0350-4c45-95b6-a160469cad0f",
+      "risk_tags": [
+        "logging_disabled_attempt",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-19T20:33:00Z",
+      "svc": "lambda",
+      "action": "CreateFunction20150421",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Developer/alice",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "eu-north-1",
+      "ip": "34.201.12.47",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "functionName": "fn_51"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-west-1:012345678901:function:fn_3"
+      },
+      "err": null,
+      "id": "d316c764-ffd9-4729-b8a3-6f737500509a",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-27T02:19:02Z",
+      "svc": "kms",
+      "action": "Decrypt",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userX",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "34.201.12.246",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-north-1:210987654321:key/012250d3-0b6c-4eb5-a116-36abdd971468"
+      },
+      "err": null,
+      "id": "66e24b53-f976-453f-9a93-cac338821152",
+      "risk_tags": [
+        "kms_decrypt_activity"
+      ]
+    },
+    {
+      "t": "2025-09-21T12:55:31Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "eu-west-1",
+      "ip": "34.201.12.148",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::012345678901:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "f5303f51-2e92-4543-a2bc-ae5374423642",
+      "risk_tags": [
+        "privilege_change",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-20T01:00:56Z",
+      "svc": "ec2",
+      "action": "TerminateInstances",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "ap-northeast-1",
+      "ip": "18.196.30.118",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-a1b0297e"
+        ]
+      },
+      "err": null,
+      "id": "c83c4aaf-edfa-4138-a564-fde10d983222",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-19T19:33:28Z",
+      "svc": "iam",
+      "action": "DeleteUser",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/charlie",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "3.5.140.177",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::210987654321:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "51beb250-cc98-44e1-aea6-f50db95f9c41",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-25T15:54:32Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userX",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.195",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_11"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:ap-southeast-1:111122223333:function:fn_85"
+      },
+      "err": null,
+      "id": "1a9ae7e8-5157-43bf-8fa1-8b7639ea46b2",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T19:28:01Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/guardduty",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "eu-west-1",
+      "ip": "52.95.110.120",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-54724d35"
+        ]
+      },
+      "err": null,
+      "id": "6780b53f-c8a8-42ac-8cc4-9ec0f5f17530",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-24T11:46:06Z",
+      "svc": "s3",
+      "action": "DeleteObject",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::210987654321:assumed-role/Developer/bob",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.3",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "bucket": "example-bucket-23",
+        "key": "test-file-4606.txt"
+      },
+      "resp": {
+        "req_id": "f68379cc-f682-487e-a787-a1f74cfe0014"
+      },
+      "err": null,
+      "id": "4e54ebcf-862e-449e-80ed-689ca162b268",
+      "risk_tags": [
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-26T10:26:24Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "us-east-1",
+      "ip": "34.201.12.76",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "2291760b-b9b2-4ed2-a202-9693b04e71c2",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T12:26:17Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Developer/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "34.201.12.79",
+      "ro": true,
+      "mfa": "false",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "779eaec7-052e-4c37-b60a-8cece5e1f8a6",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-10-01T02:50:01Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::210987654321:root",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "ap-northeast-1",
+      "ip": "34.201.12.17",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::012345678901:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "bf88987c-9fe5-460d-9472-1f581cf625d7",
+      "risk_tags": [
+        "privilege_change",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-21T18:56:18Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::210987654321:user/charlie",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.206",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-b60948a2"
+        ]
+      },
+      "err": null,
+      "id": "4321a856-c71a-4594-bdc0-c8b98f9b11c4",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-26T06:27:16Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Developer/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "52.95.110.55",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-central-1:210987654321:key/e3f90fc1-0e9f-4eac-8713-5b1eec75b310"
+      },
+      "err": null,
+      "id": "d99b3d70-0190-4b6f-8b83-caa991c1ab87",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-30T13:51:05Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/guardduty",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "us-west-2",
+      "ip": "44.240.12.120",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-north-1:111122223333:key/c2912841-355b-481c-84ec-97b509095444"
+      },
+      "err": null,
+      "id": "bbbd4127-eead-44b2-bd3f-bc827a6eb129",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T20:09:09Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "34.201.12.53",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "441d578e-5eb8-41ac-80e9-826fba7cbc19",
+      "risk_tags": [
+        "logging_disabled_attempt",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-29T04:30:17Z",
+      "svc": "lambda",
+      "action": "CreateFunction20150421",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Developer/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "18.196.30.70",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "functionName": "fn_49"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-north-1:555566667777:function:fn_59"
+      },
+      "err": null,
+      "id": "6c6c2a10-7aa4-4174-b269-c2dc2d4b58c2",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-19T17:46:24Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Admin/alice",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "eu-west-1",
+      "ip": "44.240.12.120",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-78ee3be5"
+        ]
+      },
+      "err": null,
+      "id": "2787fca0-6f2f-4d9a-b56b-b92990e08e22",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T13:49:22Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/guardduty",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "34.201.12.36",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-northeast-1:210987654321:key/bbc1cb21-bf06-4476-a783-b82373ce0282"
+      },
+      "err": null,
+      "id": "29fbc096-c19c-4459-be49-f3259dc47c61",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-18T20:39:11Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/config",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "eu-north-1",
+      "ip": "44.240.12.187",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "039bc905-435d-4a5a-b396-c190d7464124",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T22:54:57Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/cloudtrail",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "52.95.110.54",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "916e6b2e-a11e-4302-9462-4f2064b73aa1",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-29T04:45:51Z",
+      "svc": "iam",
+      "action": "CreateUser",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userY",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "eu-west-1",
+      "ip": "18.196.30.78",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::111122223333:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "0854c07f-c283-4aa9-bdb5-1ae2ae262a6e",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-28T07:05:16Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "44.240.12.27",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-1fe69672"
+        ]
+      },
+      "err": null,
+      "id": "7b398427-9a2c-49ac-a402-ebfaf6025cee",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-18T10:52:20Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.251",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-southeast-1:210987654321:key/13b06642-f4d0-4d01-9264-809e2fd63c87"
+      },
+      "err": null,
+      "id": "ae048ab2-ad29-46b7-a507-9e4ab231d5ed",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T09:34:50Z",
+      "svc": "lambda",
+      "action": "CreateFunction20150421",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::012345678901:root",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "eu-north-1",
+      "ip": "3.5.140.40",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_69"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:us-east-1:210987654321:function:fn_99"
+      },
+      "err": null,
+      "id": "b6eb4fcb-e5e1-4269-93c4-78ec3538373b",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-24T08:51:18Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "eu-central-1",
+      "ip": "34.201.12.198",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "6ba4a141-536d-4a0c-b04c-9c33c8dd3d0a",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-17T21:56:40Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/cloudtrail",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "3.5.140.135",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-west-1:555566667777:key/f5af604a-aea4-479b-8a11-a25a261e6e58"
+      },
+      "err": {
+        "code": "ThrottlingException",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "759554dd-6b22-464a-815c-7ca22dc8fdcc",
+      "risk_tags": [
+        "error_event"
+      ]
+    },
+    {
+      "t": "2025-09-23T14:47:57Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Admin/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "ap-southeast-1",
+      "ip": "18.196.30.199",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "9ede44f8-514d-45f6-a365-0896ae6610e2",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-10-01T05:37:22Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/guardduty",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "eu-west-1",
+      "ip": "44.240.12.160",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::012345678901:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "61215917-f370-45bc-8b67-387281442ce3",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-30T14:27:49Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Admin/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-west-2",
+      "ip": "34.201.12.147",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-f54ac127"
+        ]
+      },
+      "err": null,
+      "id": "9112a2de-bf47-4360-a9b1-ac3248b1df7d",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-22T04:42:14Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/cloudtrail",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "34.201.12.188",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "2f8245f0-ede4-47b4-87a5-f1d19b0e6d0f",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T22:00:31Z",
+      "svc": "ec2",
+      "action": "TerminateInstances",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Admin/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "us-east-1",
+      "ip": "34.201.12.215",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-00dd9686"
+        ]
+      },
+      "err": null,
+      "id": "9c4385a0-e4f2-4a48-b2c4-8c38781b6467",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-19T15:27:18Z",
+      "svc": "kms",
+      "action": "Decrypt",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "18.196.30.92",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:us-east-1:012345678901:key/4148764b-6634-47ed-9ade-c5a6044cafaa"
+      },
+      "err": null,
+      "id": "d8f82150-85f5-477c-93bd-82aa3bf0f74b",
+      "risk_tags": [
+        "kms_decrypt_activity"
+      ]
+    },
+    {
+      "t": "2025-09-24T00:00:32Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Admin/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "ap-southeast-1",
+      "ip": "3.5.140.84",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "functionName": "fn_40"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:ap-northeast-1:555566667777:function:fn_28"
+      },
+      "err": null,
+      "id": "4684ce50-536c-472e-a17f-b0614c9bdae1",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-23T04:34:19Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userY",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.125",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "261234da-c6ae-45d3-a926-147dfdc9cee5",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-20T16:08:35Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/cloudtrail",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "eu-north-1",
+      "ip": "52.95.110.249",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "22dd9535-1c3a-482f-9955-2841c000bcea",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-29T15:55:45Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::210987654321:assumed-role/Developer/alice",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "eu-west-1",
+      "ip": "52.95.110.75",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-60f0257c"
+        ]
+      },
+      "err": null,
+      "id": "04abb158-45a4-4e2a-b843-bc2752c97c0b",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-27T12:22:49Z",
+      "svc": "lambda",
+      "action": "UpdateFunctionConfiguration",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "3.5.140.131",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_93"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-north-1:111122223333:function:fn_71"
+      },
+      "err": null,
+      "id": "5c0ef906-1b58-4a8b-829a-3ae5562be63f",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-24T05:23:34Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/guardduty",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "52.95.110.17",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-west-1:012345678901:key/b9afc5a8-c1d2-467d-9196-e733f46d6585"
+      },
+      "err": null,
+      "id": "708e4766-dd5c-472e-bbf3-f2720643fddd",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-23T20:13:56Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "ap-southeast-1",
+      "ip": "34.201.12.130",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "d67e94c9-ee79-46b8-8f5e-029e96523b95",
+      "risk_tags": [
+        "logging_disabled_attempt"
+      ]
+    },
+    {
+      "t": "2025-09-24T15:03:13Z",
+      "svc": "kms",
+      "action": "Decrypt",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/guardduty",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "44.240.12.173",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-northeast-1:210987654321:key/d6b371c2-7900-4f84-8668-5b0cefbb18b4"
+      },
+      "err": null,
+      "id": "44cd432a-cb9c-4bbf-862a-98c54f3e9150",
+      "risk_tags": [
+        "kms_decrypt_activity"
+      ]
+    },
+    {
+      "t": "2025-09-17T14:55:21Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::210987654321:root",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "eu-west-1",
+      "ip": "3.5.140.189",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_87"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:ap-southeast-1:555566667777:function:fn_67"
+      },
+      "err": null,
+      "id": "41a1ea37-76d7-4c29-942c-8ae3ef5f66c3",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-26T06:19:49Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/david",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "3.5.140.182",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.medium"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-d4f3392f"
+        ]
+      },
+      "err": null,
+      "id": "10620c3f-de0e-4a84-b29c-2bdfc4027290",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-30T06:22:17Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/config",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "eu-north-1",
+      "ip": "18.196.30.191",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "e16b060c-1756-4568-855d-89eacc84fff9",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-29T10:02:59Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/cloudtrail",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "3.5.140.177",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-b33b5571"
+        ]
+      },
+      "err": null,
+      "id": "45457e66-af5c-4574-a00e-6a17ff727017",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-10-01T06:56:30Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "ap-northeast-1",
+      "ip": "52.95.110.29",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:eu-west-1:210987654321:key/04ec6e0f-d404-4bea-95b9-736d77c67cac"
+      },
+      "err": null,
+      "id": "658d8154-8264-442e-beae-c092856ad30a",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-21T09:39:17Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/guardduty",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "52.95.110.216",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "afe43d30-74d4-4f38-9f7b-994ce920eb67",
+      "risk_tags": [
+        "logging_disabled_attempt"
+      ]
+    },
+    {
+      "t": "2025-09-28T06:20:56Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "18.196.30.63",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "788e1b35-dc92-475f-85fc-b725da4bf2e4",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-19T14:52:43Z",
+      "svc": "s3",
+      "action": "PutObject",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "eu-central-1",
+      "ip": "18.196.30.216",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-41",
+        "key": "test-file-8205.txt"
+      },
+      "resp": {
+        "req_id": "cb8f3431-cdb9-4fa2-8b72-70525a6b7bbb"
+      },
+      "err": null,
+      "id": "4ea665d7-cd60-4d21-bbd3-908fb43c0eac",
+      "risk_tags": [
+        "root_usage",
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-28T21:49:03Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "eu-west-1",
+      "ip": "34.201.12.238",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "4bf8d2a3-3695-4699-ba8f-0b6f37924c75",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-30T02:50:22Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/config",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "eu-north-1",
+      "ip": "52.95.110.239",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "38df62eb-73b7-483d-bfd0-d181fa9da7ea",
+      "risk_tags": [
+        "logging_disabled_attempt"
+      ]
+    },
+    {
+      "t": "2025-09-17T20:02:24Z",
+      "svc": "iam",
+      "action": "DeleteUser",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.194",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::012345678901:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "4731d726-7c0e-43f8-92c8-2d86c1f288ac",
+      "risk_tags": [
+        "privilege_change",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-20T01:43:16Z",
+      "svc": "iam",
+      "action": "DeleteUser",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Developer/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "ap-southeast-1",
+      "ip": "44.240.12.129",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::210987654321:user/new-user"
+        }
+      },
+      "err": {
+        "code": "AccessDenied",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "4c2c1fd7-0c49-4f51-82a7-2e096e03a2af",
+      "risk_tags": [
+        "error_event",
+        "privilege_change",
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-24T05:15:35Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "eu-west-1",
+      "ip": "34.201.12.170",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "5736d6c8-bf19-40da-81ce-c5c1e1c077f3",
+      "risk_tags": [
+        "logging_disabled_attempt",
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-19T15:43:13Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "us-east-1",
+      "ip": "34.201.12.174",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-southeast-1:111122223333:key/ce4c99d3-9b16-4198-9161-2edc2855d0d9"
+      },
+      "err": null,
+      "id": "d7adb41a-f394-443f-8464-8372d01e7eca",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-27T08:35:18Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::210987654321:assumed-role/Developer/alice",
+        "accountId": "210987654321"
+      },
+      "acct": "012345678901",
+      "region": "us-east-1",
+      "ip": "52.95.110.142",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "bucket": "example-bucket-3",
+        "key": "test-file-1387.txt"
+      },
+      "resp": {
+        "req_id": "5db08d70-0038-4154-8eab-d26505b88aff"
+      },
+      "err": null,
+      "id": "82f81c60-fa21-4517-b865-28d4fcd8c608",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-20T04:44:49Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/cloudtrail",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "18.196.30.197",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "3e64cba0-3dd7-4b98-bd27-9ff4eb4670f2",
+      "risk_tags": [
+        "logging_disabled_attempt"
+      ]
+    },
+    {
+      "t": "2025-09-26T22:11:56Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/config",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "34.201.12.183",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-82e131ac"
+        ]
+      },
+      "err": null,
+      "id": "8509b4d6-ea47-456b-8eee-ee9a20ce6e45",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-19T12:38:05Z",
+      "svc": "ec2",
+      "action": "RunInstances",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Developer/alice",
+        "accountId": "012345678901"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "34.201.12.6",
+      "ro": true,
+      "mfa": "true",
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-0b8e76f9"
+        ]
+      },
+      "err": null,
+      "id": "d6f14bca-fa0e-43af-a176-fa3e3f1b68dc",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-22T08:09:11Z",
+      "svc": "lambda",
+      "action": "UpdateFunctionConfiguration",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::210987654321:assumed-role/Admin/bob",
+        "accountId": "210987654321"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "18.196.30.140",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "functionName": "fn_16"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:us-east-1:555566667777:function:fn_36"
+      },
+      "err": null,
+      "id": "509e81b0-1c15-410d-8b24-f096ff52cdbf",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-29T03:46:08Z",
+      "svc": "lambda",
+      "action": "CreateFunction20150421",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::210987654321:root",
+        "accountId": "210987654321"
+      },
+      "acct": "210987654321",
+      "region": "ap-northeast-1",
+      "ip": "44.240.12.230",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_94"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:us-west-2:111122223333:function:fn_36"
+      },
+      "err": null,
+      "id": "8174473f-3ac4-4162-8006-6beff7fce052",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-26T08:29:48Z",
+      "svc": "iam",
+      "action": "CreateAccessKey",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Developer/bob",
+        "accountId": "111122223333"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "34.201.12.27",
+      "ro": true,
+      "mfa": "false",
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "new-user",
+          "arn": "arn:aws:iam::111122223333:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "18467298-e123-472a-beb3-3bfefcdf6287",
+      "risk_tags": [
+        "privilege_change",
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-26T02:04:58Z",
+      "svc": "iam",
+      "action": "DeleteUser",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::555566667777:user/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "us-west-2",
+      "ip": "52.95.110.147",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "service-account"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::012345678901:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "b94a411d-c848-44a9-bced-a5dd44ab7f7f",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-23T00:35:40Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "012345678901",
+      "region": "us-west-2",
+      "ip": "18.196.30.188",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-38",
+        "key": "test-file-7553.txt"
+      },
+      "resp": {
+        "req_id": "1c2969e1-84ee-4120-8c9a-4c385db125ef"
+      },
+      "err": null,
+      "id": "256927a3-4ce9-4a7f-8df9-cb04639d7880",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-30T09:28:25Z",
+      "svc": "cloudtrail",
+      "action": "StartLogging",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::111122223333:federated-user/userX",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "eu-north-1",
+      "ip": "52.95.110.154",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "b3113fb6-c361-4065-8b9d-4b6f08c4f5d9",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T19:02:01Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::012345678901:federated-user/userX",
+        "accountId": "012345678901"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "52.95.110.100",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-30",
+        "key": "test-file-190.txt"
+      },
+      "resp": {
+        "req_id": "88791a22-eb58-4583-b746-cefd93467089"
+      },
+      "err": null,
+      "id": "126a8b2a-a074-4a7d-bf95-8cb05d2a4630",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-26T11:40:46Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::210987654321:role/service-role/cloudtrail",
+        "accountId": "210987654321"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "3.5.140.150",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "4dc40470-0b61-4040-b38e-9ca0810c03f9",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-22T09:08:02Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::210987654321:assumed-role/Developer/alice",
+        "accountId": "210987654321"
+      },
+      "acct": "111122223333",
+      "region": "eu-north-1",
+      "ip": "52.95.110.43",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "functionName": "fn_9"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:ap-northeast-1:210987654321:function:fn_39"
+      },
+      "err": null,
+      "id": "4af19a49-5456-48c8-a30a-d109cbd8c262",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-20T07:18:17Z",
+      "svc": "cloudtrail",
+      "action": "StartLogging",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/charlie",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "44.240.12.106",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "5b6a3a3e-3d23-427f-afe9-5c567934208b",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-21T01:52:53Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "eu-central-1",
+      "ip": "3.5.140.237",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-14",
+        "key": "test-file-9266.txt"
+      },
+      "resp": {
+        "req_id": "8252dd3d-30fe-4277-95c1-d783b7e44a7c"
+      },
+      "err": null,
+      "id": "ccdbc7c0-f64e-4668-b512-b575ecfd3fed",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T06:27:01Z",
+      "svc": "lambda",
+      "action": "Invoke",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::555566667777:role/service-role/guardduty",
+        "accountId": "555566667777"
+      },
+      "acct": "111122223333",
+      "region": "eu-west-1",
+      "ip": "44.240.12.25",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "functionName": "fn_50"
+      },
+      "resp": {
+        "functionArn": "arn:aws:lambda:eu-central-1:210987654321:function:fn_43"
+      },
+      "err": null,
+      "id": "80411f45-f505-40b5-ad78-5aa40f99fbda",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T08:31:38Z",
+      "svc": "sts",
+      "action": "GetCallerIdentity",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::012345678901:assumed-role/Admin/bob",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "eu-west-1",
+      "ip": "44.240.12.243",
+      "ro": true,
+      "mfa": "false",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "794bb9d9-7ce2-4d79-852c-98d6d33d49d5",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-26T14:58:29Z",
+      "svc": "cloudtrail",
+      "action": "StopLogging",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/guardduty",
+        "accountId": "111122223333"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "52.95.110.140",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "622810c6-6888-4917-83ff-2b9bbc463365",
+      "risk_tags": [
+        "logging_disabled_attempt"
+      ]
+    },
+    {
+      "t": "2025-09-28T03:23:46Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::111122223333:assumed-role/Admin/alice",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "52.95.110.222",
+      "ro": false,
+      "mfa": "false",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "a3628dbf-9cbf-4089-af56-77160cb0407a",
+      "risk_tags": [
+        "role_no_mfa"
+      ]
+    },
+    {
+      "t": "2025-09-25T08:12:53Z",
+      "svc": "cloudtrail",
+      "action": "StartLogging",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "us-west-2",
+      "ip": "3.5.140.231",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "e26b67bc-fa7e-4112-a314-fc65f9462d5e",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-18T18:44:46Z",
+      "svc": "rds",
+      "action": "CreateDBInstance",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::210987654321:assumed-role/Developer/bob",
+        "accountId": "210987654321"
+      },
+      "acct": "012345678901",
+      "region": "ap-northeast-1",
+      "ip": "44.240.12.226",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "8cd4584a-9680-459b-8cb5-97b505ba8fb1",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-30T15:14:04Z",
+      "svc": "rds",
+      "action": "DeleteDBInstance",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::012345678901:role/service-role/config",
+        "accountId": "012345678901"
+      },
+      "acct": "555566667777",
+      "region": "ap-southeast-1",
+      "ip": "18.196.30.173",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "b5d107aa-8fe9-45ae-b03c-4c0e7b300e52",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-17T22:32:53Z",
+      "svc": "ec2",
+      "action": "DescribeInstances",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Admin/bob",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "52.95.110.224",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "instancesSet": {
+          "items": [
+            {
+              "instanceType": "t3.small"
+            }
+          ]
+        }
+      },
+      "resp": {
+        "instanceIds": [
+          "i-c200e084"
+        ]
+      },
+      "err": null,
+      "id": "884d9219-e86f-44dc-a6ce-417ec4b37c30",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-25T05:30:51Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::555566667777:assumed-role/Developer/alice",
+        "accountId": "555566667777"
+      },
+      "acct": "555566667777",
+      "region": "us-east-1",
+      "ip": "44.240.12.2",
+      "ro": false,
+      "mfa": "true",
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:us-east-1:111122223333:key/7cd0f85f-640c-473f-a0dd-3ccdf8913bf5"
+      },
+      "err": null,
+      "id": "1a8cf068-43e3-4170-b292-35cab4e1fdcb",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-26T12:26:14Z",
+      "svc": "kms",
+      "action": "GenerateDataKey",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "111122223333",
+      "region": "ap-northeast-1",
+      "ip": "34.201.12.254",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-southeast-1:555566667777:key/45e6b995-6b4f-4dec-9662-91928138d300"
+      },
+      "err": null,
+      "id": "da02bb2f-91d4-41cf-a5a7-d9eb0c6c5692",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-21T13:28:13Z",
+      "svc": "sts",
+      "action": "AssumeRole",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::012345678901:user/david",
+        "accountId": "012345678901"
+      },
+      "acct": "111122223333",
+      "region": "us-east-1",
+      "ip": "3.5.140.246",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "43a0bd34-835e-4a93-9d00-97a25a1690b4",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-30T19:23:27Z",
+      "svc": "s3",
+      "action": "GetObject",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::210987654321:federated-user/userY",
+        "accountId": "210987654321"
+      },
+      "acct": "012345678901",
+      "region": "eu-central-1",
+      "ip": "52.95.110.84",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-48",
+        "key": "test-file-6762.txt"
+      },
+      "resp": {
+        "req_id": "640d113a-6bd2-4f71-9e65-72b9d82c4324"
+      },
+      "err": {
+        "code": "ThrottlingException",
+        "msg": "Simulated error for demo purposes"
+      },
+      "id": "f1f55fd7-dd96-45a0-bc9b-6b931c0b9704",
+      "risk_tags": [
+        "error_event",
+        "s3_data_access"
+      ]
+    },
+    {
+      "t": "2025-09-18T18:39:36Z",
+      "svc": "iam",
+      "action": "DeleteUser",
+      "actor": {
+        "type": "FederatedUser",
+        "arn": "arn:aws:sts::555566667777:federated-user/userX",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "eu-central-1",
+      "ip": "44.240.12.169",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "userName": "new-user"
+      },
+      "resp": {
+        "user": {
+          "userName": "service-account",
+          "arn": "arn:aws:iam::555566667777:user/new-user"
+        }
+      },
+      "err": null,
+      "id": "1a25ca64-6003-40a9-9a96-39213ea4dd19",
+      "risk_tags": [
+        "privilege_change"
+      ]
+    },
+    {
+      "t": "2025-09-23T19:28:19Z",
+      "svc": "rds",
+      "action": "ModifyDBInstance",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::555566667777:root",
+        "accountId": "555566667777"
+      },
+      "acct": "210987654321",
+      "region": "eu-west-1",
+      "ip": "34.201.12.55",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "param": "value"
+      },
+      "resp": {
+        "status": "success"
+      },
+      "err": null,
+      "id": "8214aeab-0b95-4b38-b109-0d518c74c8ff",
+      "risk_tags": [
+        "root_usage"
+      ]
+    },
+    {
+      "t": "2025-09-29T11:49:06Z",
+      "svc": "s3",
+      "action": "DeleteObject",
+      "actor": {
+        "type": "Root",
+        "arn": "arn:aws:iam::111122223333:root",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "44.240.12.209",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-48",
+        "key": "test-file-4560.txt"
+      },
+      "resp": {
+        "req_id": "fe4b7602-ff59-420d-9ef5-105c42752f4d"
+      },
+      "err": null,
+      "id": "bfd1463e-a8ed-4997-903f-ca8116cc0a08",
+      "risk_tags": [
+        "root_usage",
+        "s3_data_change"
+      ]
+    },
+    {
+      "t": "2025-09-20T11:24:15Z",
+      "svc": "s3",
+      "action": "CreateBucket",
+      "actor": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::210987654321:user/bob",
+        "accountId": "210987654321"
+      },
+      "acct": "210987654321",
+      "region": "us-east-1",
+      "ip": "44.240.12.187",
+      "ro": true,
+      "mfa": null,
+      "req": {
+        "bucket": "example-bucket-29",
+        "key": "test-file-6935.txt"
+      },
+      "resp": {
+        "req_id": "c2628b3f-cb22-4042-90fb-558c173e8b09"
+      },
+      "err": null,
+      "id": "73a51bb1-82de-4928-8a1a-7dff2f50e1a2",
+      "risk_tags": []
+    },
+    {
+      "t": "2025-09-28T21:38:50Z",
+      "svc": "kms",
+      "action": "Encrypt",
+      "actor": {
+        "type": "AWSService",
+        "arn": "arn:aws:iam::111122223333:role/service-role/guardduty",
+        "accountId": "111122223333"
+      },
+      "acct": "210987654321",
+      "region": "us-west-2",
+      "ip": "44.240.12.9",
+      "ro": false,
+      "mfa": null,
+      "req": {
+        "enc_ctx": "demo"
+      },
+      "resp": {
+        "keyId": "arn:aws:kms:ap-southeast-1:210987654321:key/28715c6d-d60f-462f-bd6c-69925c560005"
+      },
+      "err": null,
+      "id": "d54d5964-fe50-42a6-b596-4a49c0925173",
+      "risk_tags": []
+    }
+  ]
+}
